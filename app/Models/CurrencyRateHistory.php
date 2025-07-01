@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CurrencyRateHistory extends Model
 {
+    protected $table = 'currency_rates_history';
     protected $fillable = [
         'from_currency_id',
         'to_currency_id',
