@@ -13,13 +13,13 @@ class ExchangeRateApiService
     private const TABLE = 'A';
     private const FORMAT = '?format=json';
 
-    public function getExchangeRate(string $targetCurrency, \DateTime $date): ?float
+    public function getExchangeRate(?string $sourceCurrency, string $targetCurrency, \DateTime $date): ?float
     {
         // Try to get from cache first If not in cache, fetch from API
         try {
             $rates = Cache::get(self::CACHE_KEY);
 
-            if ($rates) {
+            if (isset($rates[$targetCurrency])) {
                 return $rates[$targetCurrency];
             }
 
@@ -29,8 +29,8 @@ class ExchangeRateApiService
                 $data = $response->json();
                 $rates = $data['rates'] ?? null;
 
-                // Cache the rates
-                //Cache::put(self::CACHE_KEY, $rates, self::CACHE_DURATION);
+                // Cache the rate
+                Cache::put(self::CACHE_KEY, [$targetCurrency => $rates[0]['mid']], self::CACHE_DURATION);
 
                 return (float)($rates[0]['mid']) ?? null;
             }
@@ -42,7 +42,7 @@ class ExchangeRateApiService
         }
     }
 
-    public function getHistoricalExchangeRates(string $targetCurrency, \DateTime $fromDate, \DateTime $toDate): array
+    public function getHistoricalExchangeRates(?string $sourceCurrency, string $targetCurrency, \DateTime $fromDate, \DateTime $toDate): array
     {
         try {
             $response = Http::get("{$this->getBaseUrl()}{$this->getTable()}/{$targetCurrency}/{$fromDate->format('Y-m-d')}/{$toDate->format('Y-m-d')}{$this->getFormat()}");
