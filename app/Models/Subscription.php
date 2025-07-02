@@ -6,6 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
+    /**
+     * Threshold represents the exchange rate value that triggers a notification for the user.
+     *
+     * Example Usage:
+     * If a user wants to be notified when 1 USD is worth more than 4.50 PLN
+     * They would create a subscription with:
+     * from_currency_id: USD
+     * to_currency_id: PLN
+     * threshold: 4.50
+     * direction: 'above'
+     *
+     *  */
     protected $fillable = [
         'user_id',
         'from_currency_id',
