@@ -3,3 +3,4 @@ vendor/
 .env
 storage/
 public/build/
+Notes.md
