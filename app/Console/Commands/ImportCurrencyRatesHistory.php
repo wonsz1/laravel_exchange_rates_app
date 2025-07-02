@@ -10,7 +10,6 @@ use Illuminate\Database\DatabaseManager;
 
 class ImportCurrencyRatesHistory extends Command
 {
-    private const BASE_CURRENCY = 'PLN';
     public function __construct(private Currency $currency, private CurrencyRateHistory $currencyRateHistory)
     {
         parent::__construct();
@@ -50,16 +49,16 @@ class ImportCurrencyRatesHistory extends Command
             $currencies = $this->currency->get();
 
             foreach ($currencies as $currency) {
-                $rates = $exchangeService->getHistoricalExchangeRates($currency->symbol, $fromDate, $toDate);
+                $rates = $exchangeService->getHistoricalExchangeRates(Currency::BASE_CURRENCY, $currency->symbol, $fromDate, $toDate);
 
                 if ($rates !== null) {
 
                     foreach ($rates as $rate) {
                         //Use upsert to avoid duplicates when importing multiple times
                         $this->currencyRateHistory->upsert([
-                            'from_currency_id' => $this->currency->where('symbol', self::BASE_CURRENCY)->first()->id,
+                            'from_currency_id' => $this->currency->where('symbol', Currency::BASE_CURRENCY)->first()->id,
                             'to_currency_id' => $currency->id,
-                            'rate' => $rate['mid'],
+                            'rate' => (int)($rate['mid'] * 10000),
                             'date' => $rate['effectiveDate']
                         ], ['from_currency_id', 'to_currency_id', 'date'], ['rate']);
 

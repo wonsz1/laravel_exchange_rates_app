@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Currency extends Model
 {
+    public const BASE_CURRENCY = 'PLN';
+
     protected $fillable = [
         'symbol',
         'name',
