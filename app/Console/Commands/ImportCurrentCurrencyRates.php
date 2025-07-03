@@ -8,7 +8,7 @@ use App\Models\Subscription;
 use App\Services\ExchangeRateApiService;
 use Illuminate\Console\Command;
 
-class ImportSingleCurrencyRates extends Command
+class ImportCurrentCurrencyRates extends Command
 {
     public function __construct(private Currency $currency, private CurrencyRateHistory $currencyRateHistory)
     {
@@ -18,8 +18,8 @@ class ImportSingleCurrencyRates extends Command
     /**
      * @var string
      */
-    protected $signature = 'currency:import-rates-single
-    {--currency=USD : Currency to get rates for }
+    protected $signature = 'currency:import-current-rates
+    {--currency : Currency to get rates for }
     {--date=today : Date for historical rates (YYYY-MM-DD format) }';
 
     /**
@@ -28,7 +28,7 @@ class ImportSingleCurrencyRates extends Command
     protected $description = 'Import currency exchange rates from ExchangeRate API';
     public function handle(ExchangeRateApiService $exchangeService): void
     {
-        $currency = strtoupper($this->option('currency'));
+        $currency = $this->option('currency');
         $date = $this->option('date');
 
         if (!$date || $date === 'today') {
@@ -37,6 +37,15 @@ class ImportSingleCurrencyRates extends Command
             $date = \DateTime::createFromFormat('Y-m-d', $date);
         }
 
+        if($currency) {
+            $this->importRateForCurrency(strtoupper($currency), $date, $exchangeService);
+        } else {
+            $this->importAllRates($date, $exchangeService);
+        }
+    }
+
+    private function importRateForCurrency(string $currency, \DateTime $date, ExchangeRateApiService $exchangeService)
+    {
         try {
             $this->info("Importing rates for currency: {$currency} on {$date->format('Y-m-d')}");
 
@@ -62,6 +71,15 @@ class ImportSingleCurrencyRates extends Command
             $this->error("Error importing currency rates: {$e->getMessage()}");
             throw $e;
         }
+    }
+
+    private function importAllRates(\DateTime $date, ExchangeRateApiService $exchangeService)
+    {
+        $this->info("Importing rates for all currencies.");
+
+        $this->currency->get()->each(function ($currency) use ($date, $exchangeService) {
+            $this->importRateForCurrency($currency->symbol, $date, $exchangeService);
+        });
     }
 
 }
