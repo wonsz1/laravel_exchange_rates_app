@@ -18,7 +18,7 @@ class ImportCurrentCurrencyRates extends Command
      * @var string
      */
     protected $signature = 'currency:import-current-rates
-    {--currency : Currency to get rates for. If not specified, all currencies will be imported }
+    {--currency= : Currency to get rates for. If not specified, all currencies will be imported }
     {--date=today : Date for historical rates (YYYY-MM-DD format) }';
 
     /**
@@ -31,16 +31,24 @@ class ImportCurrentCurrencyRates extends Command
         $currency = $this->option('currency');
         $date = $this->option('date');
 
-        if (!$date || $date === 'today') {
-            $date = now();
-        } else {
-            $date = \DateTime::createFromFormat('Y-m-d', $date);
-        }
+        try {
+            if (!$date || $date === 'today') {
+                $date = now();
+            } else {
+                $date = \DateTime::createFromFormat('Y-m-d', $date);
+                if (!$date) {
+                    throw new \InvalidArgumentException("Invalid date format. Please use YYYY-MM-DD format.");
+                }
+            }
 
-        if($currency) {
-            $this->importRateForCurrency(strtoupper($currency), $date, $exchangeService);
-        } else {
-            $this->importAllRates($date, $exchangeService);
+            if($currency) {
+                $this->importRateForCurrency(strtoupper($currency), $date, $exchangeService);
+            } else {
+                $this->importAllRates($date, $exchangeService);
+            }
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+            throw $e;
         }
     }
 

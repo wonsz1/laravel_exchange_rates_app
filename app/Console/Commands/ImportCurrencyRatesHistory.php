@@ -22,8 +22,8 @@ class ImportCurrencyRatesHistory extends Command
      */
     protected $signature = 'currency:import-rates-history
         {--currency=USD : Currency to get rates for}
-        {--from-date : Date for historical rates (YYYY-MM-DD format)}
-        {--to-date : Date for historical rates (YYYY-MM-DD format)}';
+        {--from-date= : Date for historical rates (YYYY-MM-DD format)}
+        {--to-date= : Date for historical rates (YYYY-MM-DD format)}';
 
     /**
      * The console command description.
