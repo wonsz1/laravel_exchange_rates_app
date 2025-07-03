@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Currency;
 use App\Models\CurrencyRateHistory;
-use App\Services\ExchangeRateApiService;
+use App\Services\ExchangeRateApiServiceInterface;
 use Illuminate\Console\Command;
 
 class ImportCurrentCurrencyRates extends Command
@@ -26,7 +26,7 @@ class ImportCurrentCurrencyRates extends Command
      */
     protected $description = 'Import currency exchange rates from ExchangeRate API';
 
-    public function handle(ExchangeRateApiService $exchangeService): void
+    public function handle(ExchangeRateApiServiceInterface $exchangeService): void
     {
         $currency = $this->option('currency');
         $date = $this->option('date');
@@ -44,7 +44,7 @@ class ImportCurrentCurrencyRates extends Command
         }
     }
 
-    private function importRateForCurrency(string $currency, \DateTime $date, ExchangeRateApiService $exchangeService)
+    private function importRateForCurrency(string $currency, \DateTime $date, ExchangeRateApiServiceInterface $exchangeService)
     {
         try {
             $this->info("Importing rates for currency: {$currency} on {$date->format('Y-m-d')}");
@@ -72,7 +72,7 @@ class ImportCurrentCurrencyRates extends Command
         }
     }
 
-    private function importAllRates(\DateTime $date, ExchangeRateApiService $exchangeService)
+    private function importAllRates(\DateTime $date, ExchangeRateApiServiceInterface $exchangeService)
     {
         $this->info("Importing rates for all currencies.");
 
