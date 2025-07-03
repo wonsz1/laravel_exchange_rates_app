@@ -30,7 +30,7 @@ class DispatchSubscriptionNotificationJob extends Command
     public function handle()
     {
         $this->info("Dispatching SubscriptionNotificationJob...");
-        dispatch(new SubscriptionNotificationJob(new Subscription(), new CurrencyRateHistory()))->onQueue('currency_rates');
+        dispatch(new SubscriptionNotificationJob(new Subscription(), new CurrencyRateHistory()))->onQueue('subscription-notifications');
 
         $this->info("SubscriptionNotificationJob dispatched successfully!");
 

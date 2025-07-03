@@ -22,8 +22,8 @@ class ImportCurrencyRatesHistory extends Command
      */
     protected $signature = 'currency:import-rates-history
         {--currency=USD : Currency to get rates for}
-        {--from-date=2025-01-01 : Date for historical rates (YYYY-MM-DD format)}
-        {--to-date=2025-06-30 : Date for historical rates (YYYY-MM-DD format)}';
+        {--from-date : Date for historical rates (YYYY-MM-DD format)}
+        {--to-date : Date for historical rates (YYYY-MM-DD format)}';
 
     /**
      * The console command description.
@@ -32,9 +32,6 @@ class ImportCurrencyRatesHistory extends Command
      */
     protected $description = 'Import currency exchange rates from ExchangeRate API';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(ExchangeRateApiService $exchangeService): void
     {
         $currency = strtoupper($this->option('currency'));
@@ -75,5 +72,4 @@ class ImportCurrencyRatesHistory extends Command
             throw $e;
         }
     }
-
 }

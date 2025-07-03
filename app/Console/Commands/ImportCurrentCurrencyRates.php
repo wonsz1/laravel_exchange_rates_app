@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Currency;
 use App\Models\CurrencyRateHistory;
-use App\Models\Subscription;
 use App\Services\ExchangeRateApiService;
 use Illuminate\Console\Command;
 
@@ -19,13 +18,14 @@ class ImportCurrentCurrencyRates extends Command
      * @var string
      */
     protected $signature = 'currency:import-current-rates
-    {--currency : Currency to get rates for }
+    {--currency : Currency to get rates for. If not specified, all currencies will be imported }
     {--date=today : Date for historical rates (YYYY-MM-DD format) }';
 
     /**
      * @var string
      */
     protected $description = 'Import currency exchange rates from ExchangeRate API';
+
     public function handle(ExchangeRateApiService $exchangeService): void
     {
         $currency = $this->option('currency');
@@ -64,7 +64,6 @@ class ImportCurrentCurrencyRates extends Command
             } else {
                 $this->warn("Could not get rate for {$currency}");
             }
-
 
             $this->info('Import completed!');
         } catch (\Exception $e) {

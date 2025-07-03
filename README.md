@@ -20,7 +20,14 @@ threshold: 4.50
 direction: 'above'
 
 **Import kursów**: \
-Wielokrotne importowanie kursów dla tego samego dnia powoduje błąd przy tworzeniu rekordów w tabeli currency_rates_history(duplicate key value violates unique constraint). Taka sytuacja może pojawiać się przy imporcie z zakresem dat. Dlatego zastosowalem metode upsert.
+Wielokrotne importowanie kursów dla tego samego dnia powoduje błąd przy tworzeniu rekordów w tabeli currency_rates_history(kurs waluty dla danego dnia musi być unikalny). Taka sytuacja może pojawiać się przy manualnym imporcie pryz użyciu komend konsolowych. Dlatego zastosowalem metode upsert w ImportCurrentCurrencyRates oraz w ImportCurrencyRatesHistory.
+
+Dla importu kursów została przygotowana komenda konsolowa **currency:import-current-rates**, która została dodana do routes/console.php i może być uruchomiona przez cron.
+Dla obsługi subskrypcji została przygotowana komenda konsolowa **app:dispatch-subscription-notification-job**, która również została dodana do routes/console.php i może być uruchomiona przez cron. Uruchomienie joba powoduje dodanie do kolejki wszystkich subskrypcji, które mają aktywne powiadomienia.
+Kolejke można obsłużyć poprzez polecenie w cron:
+* * * * * cd /var/www/html/ && php artisan queue:work --queue=subscription-notifications
+Po obsłużeniu kolejki do kolejnej kolejki zostają dodane notyfikacje, które można wysłać kolejnym workerm w cron:
+* * * * * cd /var/www/html/ && php artisan queue:work --queue=mail-queue
 
 **API**: \
 Korzystam z API NBP - https://api.nbp.pl/, które pozwala na pobieranie kursów walut tylko w przeliczeniu na złotówki. Można jednak dodać serwis komunikujący się z innym API i zmienić polecenia importu - np. zostosować wzorzec strategii i zmieniać integrację w zależności od parametru w .env, w komendzie konsolowej czy nawet dać do wyboru w interfejsie użytkownika.
@@ -29,6 +36,7 @@ Korzystam z API NBP - https://api.nbp.pl/, które pozwala na pobieranie kursów 
 docker-compose up --build -d
 docker-compose exec node10 npm install && npm run build
 docker-compose exec php composer run dev
+
 
 ### Plan projektu
 
