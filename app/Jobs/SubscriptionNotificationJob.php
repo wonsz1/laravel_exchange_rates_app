@@ -2,17 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Models\Currency;
 use App\Models\CurrencyRateHistory;
 use App\Models\Subscription;
 use App\Notifications\CurrencyRateNotification;
-use App\Services\ExchangeRateApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\Attributes\WithoutRelations;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
 class SubscriptionNotificationJob implements ShouldQueue
@@ -39,70 +36,45 @@ class SubscriptionNotificationJob implements ShouldQueue
     ) {
     }
 
-    /**
-     * Execute the job.
-     */
-    public function handle(ExchangeRateApiService $exchangeService): void
+    public function handle(): void
     {
-        //Log::info("SubscriptionNotificationJob started for base currency: ");
-
-        // Get all active subscriptions
         $subscriptions = $this->subscription->where('is_active', true)
             ->with(['fromCurrency', 'toCurrency'])
             ->get();
 
-        $currentDate = now();
-
         foreach ($subscriptions as $subscription) {
-            // Get current exchange rate
-            $currentRate = $exchangeService->getExchangeRate(
-                $subscription->fromCurrency->symbol,
-                $subscription->toCurrency->symbol,
-                $currentDate
-            );
-            if ($currentRate === null) {
+            $currentRate = $this->currencyRateHistory->where([
+                'from_currency_id' => $subscription->fromCurrency->id,
+                'to_currency_id' => $subscription->toCurrency->id,
+                'date' => now()->format('Y-m-d')
+            ])->first();
+
+            Log::info([
+                'from_currency_id' => $subscription->fromCurrency->id,
+                'to_currency_id' => $subscription->toCurrency->id,
+                'date' => now()->format('Y-m-d')
+            ]);
+
+            if($currentRate === null) {
                 continue;
             }
 
-            // Save rate history
-            $this->currencyRateHistory->upsert([
-                'from_currency_id' => $subscription->fromCurrency->id,
-                'to_currency_id' => $subscription->toCurrency->id,
-                'rate' => (int)($currentRate * 10000),
-                'date' => $currentDate->format('Y-m-d')
-            ], ['from_currency_id', 'to_currency_id', 'date'], ['rate']);
-
-            // Check if threshold is met and notify if needed
             if ($this->shouldNotify($subscription, $currentRate)) {
-                $this->notifyUser($subscription, $currentRate);
+                $this->notifyUser($subscription, $currentRate->rate);
             }
         }
     }
 
-    /**
-     * Check if notification should be sent based on threshold
-     */
-    private function shouldNotify(Subscription $subscription, float $currentRate): bool
+    private function shouldNotify(Subscription $subscription, object $currentRate): bool
     {
-        // Check if threshold was previously met
-        if ($subscription->last_notified_at) {
-            $lastRate = $this->currencyRateHistory->where('from_currency_id', $subscription->from_currency_id)
-                ->where('to_currency_id', $subscription->to_currency_id)
-                ->where('date', '<=', $subscription->last_notified_at)
-                ->orderBy('date', 'desc')
-                ->first();
-
-            if ($lastRate && $this->isThresholdMet($subscription, $lastRate->rate)) {
-                return false; // Already notified about this threshold
-            }
+        // Check if user was already notified
+        if ($subscription->last_notified_at && $currentRate->date == $subscription->last_notified_at) {
+            return false;
         }
 
-        return $this->isThresholdMet($subscription, $currentRate);
+        return $this->isThresholdMet($subscription, $currentRate->rate);
     }
 
-    /**
-     * Check if current rate meets the subscription threshold
-     */
     private function isThresholdMet(Subscription $subscription, float $currentRate): bool
     {
         return match ($subscription->direction) {
@@ -112,15 +84,12 @@ class SubscriptionNotificationJob implements ShouldQueue
         };
     }
 
-    /**
-     * Send notification to user
-     */
-    private function notifyUser(Subscription $subscription, float $currentRate): void
+    private function notifyUser(Subscription $subscription, int $currentRate): void
     {
         $subscription->user->notify(new CurrencyRateNotification(
             $subscription->fromCurrency,
             $subscription->toCurrency,
-            $currentRate,
+            $currentRate / 10000,
             $subscription->threshold,
             $subscription->direction
         ));

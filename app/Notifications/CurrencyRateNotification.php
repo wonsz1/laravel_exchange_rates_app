@@ -5,13 +5,10 @@ namespace App\Notifications;
 use App\Models\Currency;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Message;
-use Illuminate\Notifications\MailMessage;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Notifications\Messages\MailMessage as NotificationMailMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CurrencyRateNotification extends Notification
+class CurrencyRateNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -37,10 +34,17 @@ class CurrencyRateNotification extends Notification
         return ['mail'];
     }
 
+    public function viaQueues(): array
+    {
+        return [
+            'mail' => 'mail-queue',
+        ];
+    }
+
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(mixed $notifiable): NotificationMailMessage
+    public function toMail(object $notifiable): MailMessage
     {
         $directionText = match ($this->direction) {
             'above' => 'above',
@@ -48,7 +52,7 @@ class CurrencyRateNotification extends Notification
             default => 'at'
         };
 
-        return (new NotificationMailMessage)
+        return (new MailMessage)
             ->subject("Currency Rate Alert: {$this->fromCurrency->symbol}/{$this->toCurrency->symbol}")
             ->greeting('Currency Rate Alert')
             ->line("The current exchange rate between {$this->fromCurrency->symbol} and {$this->toCurrency->symbol} is {$this->currentRate}")
