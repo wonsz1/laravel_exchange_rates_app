@@ -4,3 +4,4 @@ vendor/
 storage/
 public/build/
 Notes.md
+.phpunit.result.cache
