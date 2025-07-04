@@ -108,7 +108,7 @@ class ImportCurrentCurrencyRatesTest extends TestCase
             ])
         ]);
 
-        $this->artisan('currency:import-current-rates', ['--currency' => 'USD'])
+        $this->artisan('currency:import-current-rates', ['--currency' => 'USD', '--date' => '2025-07-03'])
              ->assertExitCode(0)
              ->expectsOutput('Importing rates for currency: USD on 2025-07-03')
              ->expectsOutput('Successfully imported rate for USD: 4.2')
