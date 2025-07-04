@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ApiPlatform\Metadata\ApiResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Currency;
@@ -10,6 +11,7 @@ use App\Models\Currency;
  * @property-read Currency $fromCurrency
  * @property-read Currency $toCurrency
  */
+#[ApiResource]
 class CurrencyRateHistory extends Model
 {
     protected $table = 'currency_rates_history';

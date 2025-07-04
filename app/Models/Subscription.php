@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Currency;
+use ApiPlatform\Metadata\ApiResource;
 
 /**
  * @property-read User $user
  * @property-read Currency $fromCurrency
  * @property-read Currency $toCurrency
  */
+#[ApiResource]
 class Subscription extends Model
 {
     /**
