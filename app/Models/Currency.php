@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use ApiPlatform\Metadata\ApiProperty;
 
 #[ApiResource(
     operations: [
@@ -26,12 +26,14 @@ class Currency extends Model
     }
 
     #[Groups(['currency:read', 'currency:list', 'currency:write', 'subscription:read'])]
+    #[ApiProperty(example: 'PLN')]
     public function getSymbol(): string
     {
         return $this->symbol;
     }
 
     #[Groups(['currency:read', 'currency:list', 'currency:write'])]
+    #[ApiProperty(example: 'Polish Złoty')]
     public function getName(): string
     {
         return $this->name;
@@ -40,7 +42,6 @@ class Currency extends Model
     protected $fillable = [
         'symbol',
         'name',
-        'iso_code',
         'is_active'
     ];
 

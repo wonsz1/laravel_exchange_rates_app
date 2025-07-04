@@ -14,7 +14,6 @@ return new class () extends Migration {
             $table->id();
             $table->string('symbol', 3)->unique();
             $table->string('name');
-            $table->string('iso_code', 3)->unique();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
