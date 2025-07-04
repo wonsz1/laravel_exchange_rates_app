@@ -3,7 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Currency;
 
+/**
+ * @property-read User $user
+ * @property-read Currency $fromCurrency
+ * @property-read Currency $toCurrency
+ */
 class Subscription extends Model
 {
     /**
@@ -24,7 +31,8 @@ class Subscription extends Model
         'to_currency_id',
         'threshold',
         'direction',
-        'is_active'
+        'is_active',
+        'last_notified_at'
     ];
 
     protected $casts = [
@@ -38,12 +46,12 @@ class Subscription extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function fromCurrency()
+    public function fromCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'from_currency_id');
     }
 
-    public function toCurrency()
+    public function toCurrency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'to_currency_id');
     }

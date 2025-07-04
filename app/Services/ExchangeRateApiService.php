@@ -15,7 +15,7 @@ class ExchangeRateApiService implements ExchangeRateApiServiceInterface
                 $data = $response->json();
                 $rates = $data['rates'] ?? null;
 
-                return (float)($rates[0]['mid']) ?? null;
+                return (float)($rates[0]['mid']);
             }
 
             return null;

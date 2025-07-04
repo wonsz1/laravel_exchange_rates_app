@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
 class Currency extends Model
@@ -20,22 +21,22 @@ class Currency extends Model
     ];
 
     // Relationships
-    public function fromSubscriptions()
+    public function fromSubscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class, 'from_currency_id');
     }
 
-    public function toSubscriptions()
+    public function toSubscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class, 'to_currency_id');
     }
 
-    public function ratesAsBase()
+    public function ratesAsBase(): HasMany
     {
         return $this->hasMany(CurrencyRateHistory::class, 'from_currency_id');
     }
 
-    public function ratesAsTarget()
+    public function ratesAsTarget(): HasMany
     {
         return $this->hasMany(CurrencyRateHistory::class, 'to_currency_id');
     }
