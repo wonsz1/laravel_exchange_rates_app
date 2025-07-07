@@ -15,13 +15,19 @@ class CurrencyChart extends Component
     public $dates = [];
     public $fromDate;
 
-    public function mount(string $fromCurrencySymbol, string $toCurrencySymbol, Currency $currencyModel, CurrencyRateHistoryInterface $currencyRateHistoryRepository)
+    public function mount(
+        string $fromCurrencySymbol, 
+        string $toCurrencySymbol, 
+        Currency $currencyModel, 
+        CurrencyRateHistoryInterface $currencyRateHistoryRepository,
+        Carbon $carbon
+    )
     {
         $this->fromCurrency = $currencyModel->where('symbol', $fromCurrencySymbol)->first();
         $this->toCurrency = $currencyModel->where('symbol', $toCurrencySymbol)->first();
 
         //[todo] make this selectable on the view
-        $fromDate = Carbon::now()->subDays(7);
+        $fromDate = $carbon::now()->subDays(14);
 
         $this->rates = [];
         $this->dates = [];
@@ -30,7 +36,7 @@ class CurrencyChart extends Component
         $rates = $currencyRateHistoryRepository->getRatesBetweenCurrenciesFromDate($this->fromCurrency->id, $this->toCurrency->id, $fromDate);
 
         foreach ($rates as $rate) {
-            $this->dates[] = Carbon::parse($rate->date)->format('Y-m-d');
+            $this->dates[] = $carbon::parse($rate->date)->format('Y-m-d');
             $this->rates[] = $rate->rate / 10000;
         }
     }

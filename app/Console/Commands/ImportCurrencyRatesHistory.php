@@ -43,20 +43,15 @@ class ImportCurrencyRatesHistory extends Command
 
         try {
             $this->info("Importing rates for currency: {$currency} on {$fromDate->format('Y-m-d')} to {$toDate->format('Y-m-d')}");
-            $currencies = $this->currency->get();
+            $currency = $this->currency->where('symbol', $currency)->first();
+            $baseCurrency = $this->currency->where('symbol', Currency::BASE_CURRENCY)->first();
 
-            foreach ($currencies as $currency) {
-                $rates = $exchangeService->getHistoricalExchangeRates(Currency::BASE_CURRENCY, $currency->symbol, $fromDate, $toDate);
-
-                if (count($rates) < 1) {
-                    $this->warn("Could not get rate for {$currency->symbol}");
-                    continue;
-                }
+                $rates = $exchangeService->getHistoricalExchangeRates($baseCurrency->symbol, $currency->symbol, $fromDate, $toDate);
 
                 foreach ($rates as $rate) {
                     //Use upsert to avoid duplicates when importing multiple times
                     $this->currencyRateHistory->upsert([
-                        'from_currency_id' => $this->currency->where('symbol', Currency::BASE_CURRENCY)->first()->id,
+                        'from_currency_id' => $baseCurrency->id,
                         'to_currency_id' => $currency->id,
                         'rate' => (int)($rate['mid'] * 10000),
                         'date' => $rate['effectiveDate']
@@ -64,7 +59,7 @@ class ImportCurrencyRatesHistory extends Command
 
                     $this->info("Successfully imported rate for {$currency->symbol}: {$rate['mid']} on {$rate['effectiveDate']}");
                 }
-            }
+            
 
             $this->info('Import completed!');
         } catch (\Exception $e) {
