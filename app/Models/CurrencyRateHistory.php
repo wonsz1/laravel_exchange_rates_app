@@ -39,7 +39,7 @@ class CurrencyRateHistory extends Model
 
     #[Groups(['currency_rate_history:read', 'currency_rate_history:list', 'currency_rate_history:write'])]
     #[ApiProperty(example: '2025-01-01T00:00:00')]
-    public function getDate(): \DateTime
+    public function getDate(): string
     {
         return $this->date;
     }
