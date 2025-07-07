@@ -12,6 +12,7 @@ class CurrencyRateHistoryRepository implements CurrencyRateHistoryInterface
         return CurrencyRateHistory::where('from_currency_id', $fromCurrencyId)
             ->where('to_currency_id', $toCurrencyId)
             ->whereDate('date', '>=', $date)
+            ->orderBy('date', 'asc')
             ->get();
     }
 }
