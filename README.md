@@ -1,6 +1,9 @@
 
 ## Projekt: Currency Exchange Rate Notifier
 
+![Alt text](/public/available_currencies.png?raw=true "Available currencies")
+![Alt text](/public/exchange_rate.png?raw=true "Exchange rate chart")
+
 ### Wyzwania i Rozwiązania architektoniczne
 **Tabele**:\
 **users** (domyślna tabela, już stworzona).\
