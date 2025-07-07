@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Livewire\CurrencyList;
+use App\Livewire\CurrencyChart;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,3 +22,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/currencies', CurrencyList::class)->name('currencies.index');
+Route::get('/currencies/{fromCurrencySymbol}/{toCurrencySymbol}', CurrencyChart::class)->name('currencies.show');
