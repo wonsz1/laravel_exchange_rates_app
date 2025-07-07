@@ -40,6 +40,8 @@ docker-compose exec node10 npm install && npm run build \
 docker-compose exec php composer run dev 
 
 ### Testy
+
+docker-compose exec php php artisan test
 docker-compose exec php ./vendor/bin/phpstan analyse app --memory-limit=1G
 
 ### Plan projektu

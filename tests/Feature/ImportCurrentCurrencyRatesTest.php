@@ -2,12 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Console\Commands\ImportCurrentCurrencyRates;
 use App\Models\Currency;
 use App\Models\CurrencyRateHistory;
-use App\Services\ExchangeRateApiService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Http;
 

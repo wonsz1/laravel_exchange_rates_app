@@ -20,14 +20,14 @@ class CurrencyChart extends Component
         string $toCurrencySymbol, 
         Currency $currencyModel, 
         CurrencyRateHistoryInterface $currencyRateHistoryRepository,
-        Carbon $carbon
+        \DateTime $dateTime
     )
     {
         $this->fromCurrency = $currencyModel->where('symbol', $fromCurrencySymbol)->first();
         $this->toCurrency = $currencyModel->where('symbol', $toCurrencySymbol)->first();
 
         //[todo] make this selectable on the view
-        $fromDate = $carbon::now()->subDays(14);
+        $fromDate = $dateTime->modify('-14 days');
 
         $this->rates = [];
         $this->dates = [];
@@ -36,7 +36,7 @@ class CurrencyChart extends Component
         $rates = $currencyRateHistoryRepository->getRatesBetweenCurrenciesFromDate($this->fromCurrency->id, $this->toCurrency->id, $fromDate);
 
         foreach ($rates as $rate) {
-            $this->dates[] = $carbon::parse($rate->date)->format('Y-m-d');
+            $this->dates[] = $dateTime->createFromFormat('Y-m-d H:i:s', $rate->date)->format('Y-m-d');
             $this->rates[] = $rate->rate / 10000;
         }
     }
