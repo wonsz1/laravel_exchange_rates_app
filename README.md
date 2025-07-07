@@ -72,12 +72,10 @@ docker-compose exec php ./vendor/bin/phpstan analyse app --memory-limit=1G
 - Wyświetlenie listy dostępnych walut
 - Wyświetlenie wykresu kursów wybraje waluty
 
-[todo]
-
-- Dodanie możliwości zmiany zakresu dat dla wykresu
-- Dodawanie, edycja i usuwanie subskrypcji
-- Wyświetlenie listy subskrypcji
-- Panel Admina
+- Dodanie możliwości zmiany zakresu dat dla wykresu [todo]
+- Dodawanie, edycja i usuwanie subskrypcji [todo]
+- Wyświetlenie listy subskrypcji [todo]
+- Panel Admina [todo]
 
 ### Etap 6: Logowanie i rejestracja [todo]
 - Logowanie za pomocą Google i Facebook
