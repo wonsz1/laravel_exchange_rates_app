@@ -19,9 +19,10 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    
+Route::get('/currencies', CurrencyList::class)->name('currencies.index');
+Route::get('/currencies/{fromCurrencySymbol}/{toCurrencySymbol}', CurrencyChart::class)->name('currencies.show');
 });
 
 require __DIR__.'/auth.php';
 
-Route::get('/currencies', CurrencyList::class)->name('currencies.index');
-Route::get('/currencies/{fromCurrencySymbol}/{toCurrencySymbol}', CurrencyChart::class)->name('currencies.show');
